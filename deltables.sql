@@ -1,0 +1,6 @@
+BEGIN;
+
+DELETE FROM users;
+DELETE FROM phonebook;
+
+COMMIT;

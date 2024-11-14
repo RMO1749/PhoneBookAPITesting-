@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    volumes:
+      - "/home/thetemplemann/UT Arlington Local/Secure Programming /test/phonebook.db:/app/phonebook.db"
+      - "/home/thetemplemann/UT Arlington Local/Secure Programming /test/audit.log:/app/audit.log"
+      - "/home/thetemplemann/UT Arlington Local/Secure Programming /test/test.db:/app/test.db"
+    environment:
+      BASE_URL: http://app:8000
+      DATABASE_URL: sqlite:////app/phonebook.db
+    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+
+  test:
+    build: .
+    command: ["python", "app_test.py"]
+    depends_on:
+      - app
+    environment:
+      BASE_URL: http://app:8000
+      DATABASE_URL: sqlite:////app/test.db
+    volumes:
+      - "/home/thetemplemann/UT Arlington Local/Secure Programming /test/test.db:/app/test.db"
+      - "/home/thetemplemann/UT Arlington Local/Secure Programming /test/test_data.json:/app/test_data.json"

@@ -1,0 +1,795 @@
+{
+	"info": {
+		"_postman_id": "46816427-3252-42c3-bfc7-fbf4ce5e5dde",
+		"name": "PhoneBook API Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39706002",
+		"_collection_link": "https://test-team-7404.postman.co/workspace/Test-Team-Workspace~39f12d35-cf19-405c-8c1b-f7cc15a56717/collection/39662176-46816427-3252-42c3-bfc7-fbf4ce5e5dde?action=share&source=collection_link&creator=39706002"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"item": [
+						{
+							"name": "Register User (READ_WRITE)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Test for successful registration",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"// Check that access_token is present in the response",
+											"const responseData = pm.response.json();",
+											"pm.test(\"Response contains access_token\", function () {",
+											"    pm.expect(responseData).to.have.property(\"access_token\");",
+											"});",
+											"",
+											"// Store access token and username in environment variables for reuse",
+											"pm.environment.set(\"access_token\", responseData.access_token);",
+											"pm.environment.set(\"username\", \"read_write_user\"); // Assuming the username was \"read_write_user\"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"username\": \"read_write_user\",\n  \"password\": \"readwritepassword\",\n  \"role\": \"READ_WRITE\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/register",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register User (READ ONLY)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"const responseData = pm.response.json();",
+											"pm.test(\"Response contains access_token\", function () {",
+											"    pm.expect(responseData).to.have.property(\"access_token\");",
+											"});",
+											"",
+											"// Store the read-only access token in an environment variable",
+											"pm.environment.set(\"access_token_read\", responseData.access_token);",
+											"pm.environment.set(\"username_read\", \"read_user\");",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"username\": \"read_user\",\n  \"password\": \"readpassword\",\n  \"role\": \"READ\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/register",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Login User /Get Token",
+					"item": [
+						{
+							"name": "Login User/Get Token For User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.request.headers.add({",
+											"    key: \"Authorization\",",
+											"    value: \"Bearer \" + pm.environment.get(\"access_token\")",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "user",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "password",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/token",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"token"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "PhoneBook Operations",
+			"item": [
+				{
+					"name": "Add Entry",
+					"item": [
+						{
+							"name": "Add Entry (Authorized) - name",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.request.headers.add({",
+											"    key: \"Authorization\",",
+											"    value: \"Bearer \" + pm.environment.get(\"access_token\")",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Check if the response status code is 200 (successfully added)",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.equal(200);",
+											"});",
+											"",
+											"// Check that the response message confirms the addition",
+											"pm.test(\"Response message confirms addition\", function () {",
+											"    const responseData = pm.response.json();",
+											"    pm.expect(responseData.message).to.equal(\"Person added successfully\");",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"full_name\": \"John James\",\n  \"phone_number\": \"12346\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/PhoneBook/add",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"PhoneBook",
+										"add"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Entry Authorized - Number",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.request.headers.add({",
+											"    key: \"Authorization\",",
+											"    value: \"Bearer \" + pm.environment.get(\"access_token\")",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Check if the response status code is 200 (successfully added)",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.equal(200);",
+											"});",
+											"",
+											"// Check that the response message confirms the addition",
+											"pm.test(\"Response message confirms addition\", function () {",
+											"    const responseData = pm.response.json();",
+											"    pm.expect(responseData.message).to.equal(\"Person added successfully\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"full_name\": \"James John\",\n  \"phone_number\": \"12345\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/PhoneBook/add",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"PhoneBook",
+										"add"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "List Entries",
+					"item": [
+						{
+							"name": "List  Entries (Authorized)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.request.headers.add({",
+											"    key: \"Authorization\",",
+											"    value: \"Bearer \" + pm.environment.get(\"access_token_read\")",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Check if the response status is 200 (successful request)",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.equal(200);",
+											"});",
+											"",
+											"// Validate that the response contains an array of entries",
+											"pm.test(\"Response contains a list of entries\", function () {",
+											"    const responseData = pm.response.json();",
+											"    pm.expect(responseData).to.be.an(\"array\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/PhoneBook/list",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"PhoneBook",
+										"list"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Delete Entry by Number",
+					"item": [
+						{
+							"name": "Delete Entry by Number(Authorized)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.request.headers.add({",
+											"    key: \"Authorization\",",
+											"    value: \"Bearer \" + pm.environment.get(\"access_token\")",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Check if the response status code is 200 (successfully deleted)",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.equal(200);",
+											"});",
+											"",
+											"// Confirm that the response message indicates successful deletion",
+											"pm.test(\"Response message confirms deletion\", function () {",
+											"    const responseData = pm.response.json();",
+											"    pm.expect(responseData.message).to.equal(\"Person deleted successfully\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"full_name\": \"John James\",\n  \"phone_number\": \"12346\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/PhoneBook/deleteByNumber",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"PhoneBook",
+										"deleteByNumber"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Delete Entry by Name",
+					"item": [
+						{
+							"name": "Delete Entry by Name(Authorized)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.request.headers.add({",
+											"    key: \"Authorization\",",
+											"    value: \"Bearer \" + pm.environment.get(\"access_token\")",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Check if the response status code is 200 (successfully deleted)",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.equal(200);",
+											"});",
+											"",
+											"// Confirm that the response message indicates successful deletion",
+											"pm.test(\"Response message confirms deletion\", function () {",
+											"    const responseData = pm.response.json();",
+											"    pm.expect(responseData.message).to.equal(\"Person deleted successfully\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"full_name\": \"James John\",\n  \"phone_number\": \"12345\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/PhoneBook/deleteByName",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"PhoneBook",
+										"deleteByName"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Invalid Input Tests",
+					"item": [
+						{
+							"name": "Add UnAuth",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.request.headers.add({",
+											"    key: \"Authorization\",",
+											"    value: \"Bearer \" + pm.environment.get(\"access_token_read\")",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Expect status code to be 403 Forbidden",
+											"pm.test(\"Status code is 403 Forbidden\", function () {",
+											"    pm.expect(pm.response.code).to.equal(403);",
+											"});",
+											"",
+											"// Verify error message for insufficient permissions",
+											"pm.test(\"Response message indicates insufficient permissions\", function () {",
+											"    const responseData = pm.response.json();",
+											"    pm.expect(responseData.detail).to.include(\"Insufficient permissions\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"full_name\": \"John Jones\",\n  \"phone_number\": \"12345\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/PhoneBook/add",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"PhoneBook",
+										"add"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteName UnAuth",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.request.headers.add({",
+											"    key: \"Authorization\",",
+											"    value: \"Bearer \" + pm.environment.get(\"access_token_read\")",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Expect status code to be 403 Forbidden",
+											"pm.test(\"Status code is 403 Forbidden\", function () {",
+											"    pm.expect(pm.response.code).to.equal(403);",
+											"});",
+											"",
+											"// Verify error message for insufficient permissions",
+											"pm.test(\"Response message indicates insufficient permissions\", function () {",
+											"    const responseData = pm.response.json();",
+											"    pm.expect(responseData.detail).to.include(\"Insufficient permissions\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"full_name\": \"John James\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/PhoneBook/deleteByName",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"PhoneBook",
+										"deleteByName"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteNumber UnAuth",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.request.headers.add({",
+											"    key: \"Authorization\",",
+											"    value: \"Bearer \" + pm.environment.get(\"access_token_read\")",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Expect status code to be 403 Forbidden",
+											"pm.test(\"Status code is 403 Forbidden\", function () {",
+											"    pm.expect(pm.response.code).to.equal(403);",
+											"});",
+											"",
+											"// Verify error message for insufficient permissions",
+											"pm.test(\"Response message indicates insufficient permissions\", function () {",
+											"    const responseData = pm.response.json();",
+											"    pm.expect(responseData.detail).to.include(\"Insufficient permissions\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"phone_number\": \"123456\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/PhoneBook/deleteByNumber",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"PhoneBook",
+										"deleteByNumber"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

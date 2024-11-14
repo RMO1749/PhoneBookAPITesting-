@@ -1,0 +1,33 @@
+{
+  "valid_entries": [
+    { "name": "Bruce Schneier", "phone": "12345" },
+    { "name": "Schneier, Bruce", "phone": "(703)111-2121" },
+    { "name": "Schneier, Bruce", "phone": "+1(703)111-2121" },
+    { "name": "O'Malley, John F.", "phone": "+32 (21) 212-2324" },
+    { "name": "John O'Malley-Smith", "phone": "1(703)123-1234" },
+    { "name": "Cher", "phone": "011 701 111 1234" },
+    { "name": "Smith-Jones A.", "phone": "011 1 703 111 1234" },
+    { "name": "Smith, John", "phone": "12345.12345" },
+    { "name": "Schneier, Bruce Wayne", "phone": "123-1234" }
+  ],
+  "invalid_names": [
+    { "name": "L33t Hacker", "phone": "12345" },
+    { "name": "<Script>alert(“XSS”)</Script>", "phone": "(703)111-2121" },
+    { "name": "select * from users;", "phone": "123-1234" }
+  ],
+  "invalid_phones": [
+    { "name": "Bruce Schneier", "phone": "123" },
+    { "name": "Schneier, Bruce", "phone": "<script>alert(“XSS”)</script>" },
+    { "name": "O'Malley, John F.", "phone": "1/703/123/1234" },
+    { "name": "Cher", "phone": "Nr 102-123-1234" },
+    { "name": "Smith-Jones A.", "phone": "7031111234" },
+    { "name": "Smith, John", "phone": "+1234 (201) 123-1234" },
+    { "name": "Schneier, Bruce Wayne", "phone": "(001) 123-1234" },
+    { "name": "Schneier", "phone": "+01 (703) 123-1234" },
+    { "name": "Schneier, Bruce Wayne", "phone": "(703) 123-1234 ext 204" }
+  ],
+  "duplicate_entries": [
+    { "name": "John Doe", "phone": "555-5555" },
+    { "name": "John Doe", "phone": "555-5555" }
+  ]
+}
