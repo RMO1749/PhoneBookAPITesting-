@@ -112,7 +112,6 @@ class Token(BaseModel):
 
 class Person(BaseModel):
     full_name: str = Field(..., max_length=100, regex=r"^(?:[A-Za-z]+(?:['-]?[A-Za-z]+)*,?\s*){1,3}(?:\s[A-Z]\.)?$")
-    # phone_number: str = Field(..., max_length=20, regex=r"^(?:(?:\+|00|011)?1?[-. ]?)?(?:\d{1,3}[-. ]?)?(?:\(?\d{2,3}\)?[-. ]?)?(?:\d{3}[-. ]\d{4}|\d{5}[-. ]\d{5}|\d{2}[-. ]\d{2}[-. ]\d{2}[-. ]\d{2}|(?:\d{4}[-. ]\d{4})|\d{5})$")
     phone_number: str
     @validator("phone_number")
     def validate_phone_number(cls, value):
